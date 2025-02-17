@@ -81,6 +81,7 @@ const menuItems = [
   { label: "글쓰기", path: "/write", icon: "📝" },
   { label: "방명록", path: "/guestbook", icon: "👍" },
   { label: "프로필", path: "/profile", icon: "👤" },
+  { label: "유저", path: "/users", icon: "👤" },
 ];
 
 // 컴포넌트 마운트 시 이벤트 리스너 등록
