@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4"
+    class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white"
   >
     <!-- 방명록 헤더 -->
     <h1 class="text-4xl font-bold mb-6">📖 Guestbook(방명록)</h1>

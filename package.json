@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.8",
     "@nuxtjs/tailwindcss": "^6.13.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
@@ -19,6 +20,7 @@
     "vue-router": "latest"
   },
   "devDependencies": {
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^22.13.4",
     "eslint-plugin-vue": "^9.32.0"
   }

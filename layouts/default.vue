@@ -30,7 +30,7 @@
       </div>
 
       <!-- 콘텐츠 영역 -->
-      <section class="flex-1 p-1 bg-black text-white overflow-auto">
+      <section class="flex-1 bg-black text-white overflow-auto">
         <div class="max-w-full mx-auto">
           <!-- Nuxt의 페이지 콘텐츠 -->
           <slot />

@@ -7,7 +7,7 @@
     "jsx": "preserve",
     "esModuleInterop": true,
     "lib": ["dom", "esnext"],
-    "types": ["nuxt", "vue", "node"],
+    "types": ["nuxt", "vue", "node", "@types/google.maps"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]

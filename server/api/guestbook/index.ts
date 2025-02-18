@@ -1,7 +1,8 @@
 import { defineEventHandler, readBody } from "h3";
-import pool from "@/server/db/connection";
+import getPool from "@/server/db/connection";
 
 export default defineEventHandler(async (event) => {
+  const pool = getPool();
   const method = event.node.req.method;
 
   if (method === "GET") {

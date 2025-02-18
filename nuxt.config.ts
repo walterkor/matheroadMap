@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     // 공개적으로 접근 가능한 변수
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
+      googleMapsApiKey: process.env.NUXT_GOOGLE_MAP_KEY,
     },
   },
   modules: ["@nuxtjs/tailwindcss"],
