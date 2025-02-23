@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.8",
+    "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/tailwindcss": "^6.13.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",

@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-screen">
+  <div class="w-full h-[90vh]">
     <!-- 검색 입력창 -->
-    <div class="p-4">
+    <div class="pt-3 pb-3">
       <input
         id="search-input"
         v-model="searchQuery"
@@ -10,62 +10,60 @@
       />
     </div>
     <!-- 지도 컨테이너 -->
-    <div ref="mapDiv" class="w-full h-[50vh]"></div>
+    <div ref="mapDiv" class="w-full h-[45vh]"></div>
+
+    <!-- 지도에 대한 구글 Info -->
+    <GoogleMapInfo :placeInfo="place" />
   </div>
 </template>
-
-<style scoped>
-/* Google Maps UI 최적화를 위한 스타일 */
-</style>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { Loader } from "@googlemaps/js-api-loader";
-import type { MarkerInfo } from "@/types/MapTypes";
+import type { MarkerInfo, PlaceInfo } from "@/types/MapTypes";
+import GoogleMapInfo from "./GoogleMapInfo.vue";
+import { useFetch } from "nuxt/app";
 
 const mapDiv = ref<HTMLElement | null>(null);
 const searchQuery = ref("");
 const runtimeConfig = useRuntimeConfig();
 
-const lat = ref<number | null>(null); //위도
-const lng = ref<number | null>(null); //경도
-
-let map: google.maps.Map;
+let map: google.maps.Map | null;
 let autocomplete: google.maps.places.Autocomplete;
 
 const markers = ref<MarkerInfo[]>([]); // 전체 마커
 const bookmarks = ref<MarkerInfo[]>([]); // 북마크 목록
-const markerInstance = ref<google.maps.Marker[]>([]); // 지도 마커 인스턴스
 
-const fetchBookMarkers = async () => {
-  const response = await fetch("/api/bookmarks");
-  const data = await response.json();
-  markers.value = data.bookmarks;
-  bookmarks.value = markers.value.filter((m: MarkerInfo) => m.isBookmarked);
-  markers.value.forEach((marker) => {});
+// setting googleMap Info
+const loader = new Loader({
+  apiKey: runtimeConfig.public.googleMapsApiKey,
+  libraries: ["places", "marker"],
+});
+
+// setting googleMap Info
+const mapOptions = {
+  center: { lat: 37.5665, lng: 126.978 }, // 서울 중심 좌표
+  zoom: 12,
+  mapId: "4504f8b37365c3d0",
 };
 
-const toggleBookmark = async (id: number) => {
-  await fetch(`/api/bookmarks/${id}/toggle`, { method: "PUT" });
-  const response = await fetch("/api/bookmarks");
-  const data = await response.json();
-  markers.value = data;
-  bookmarks.value = data.filter((m: MarkerInfo) => m.isBookmarked);
+//placeInfo
+const place = ref<PlaceInfo>({
+  name: "",
+  address: "",
+  phoneNumber: "",
+  openingHours: null,
+  location: null,
+  openStatus: false,
+  placeId: null,
+});
+
+const fetchPlace = (searchResult: PlaceInfo) => {
+  place.value = searchResult;
 };
 
-onMounted(async () => {
-  await fetchBookMarkers();
-
-  const loader = new Loader({
-    apiKey: runtimeConfig.public.googleMapsApiKey,
-    libraries: ["places"],
-  });
-
-  const mapOptions = {
-    center: { lat: 37.5665, lng: 126.978 }, // 서울 중심 좌표
-    zoom: 12,
-  };
-
+// init create googleMap
+const init = async () => {
   await loader.load();
 
   if (mapDiv.value) {
@@ -76,21 +74,87 @@ onMounted(async () => {
     autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.addListener("place_changed", () => {
       const place = autocomplete.getPlace();
-      //place.formatted_address; => 주소
-      //place.formatted_phone_number; => 전화번호
-      //place.place_id => 아이디
-      //place.weekday_text[] => 영업시간
-      //place.current_opening_hours
+      const result: PlaceInfo = {
+        name: place.name,
+        address: place.formatted_address,
+        phoneNumber: place.formatted_phone_number,
+        location: {
+          lat: place.geometry.location.lat(),
+          lng: place.geometry.location.lng(),
+        },
+        openingHours: place.opening_hours.weekday_text,
+        openStatus: place.opening_hours.isOpen(),
+        placeId: place.place_id,
+      };
+
+      fetchPlace(result);
+
       if (place.geometry && place.geometry.location) {
         map.setCenter(place.geometry.location);
         map.setZoom(15);
-        new google.maps.Marker({
+        const markerElement = new google.maps.Marker({
           position: place.geometry.location,
           map: map,
           title: place.name,
         });
+
+        let placeId = place.place_id;
+        markerElement.addListener("click", () => {
+          toggleBookmark(placeId);
+        });
       }
     });
   }
+
+  await fetchBookMarkers();
+};
+
+// 북마크 조회
+const fetchBookMarkers = async () => {
+  const response = await fetch("/api/bookmarks");
+  const data = await response.json();
+  markers.value = data.bookmarks;
+  bookmarks.value = markers.value.filter((m: MarkerInfo) => m.isBookmarked);
+  markers.value.forEach((marker) => {
+    const markerElement = new google.maps.marker.AdvancedMarkerElement({
+      map: map,
+      position: marker.position,
+    });
+
+    let placeId = marker.placeId;
+
+    markerElement.addListener("click", () => {
+      toggleBookmark(placeId);
+    });
+  });
+};
+
+//북마크 click 이벤트
+const toggleBookmark = async (placeId: string) => {
+  if (!placeId) {
+    alert("해당 값이 placeId값이 잘못되었습니다.");
+    return;
+  }
+
+  const { data, error } = useFetch(`/api/bookmarks/getPlaceDetails`, {
+    query: { placeId },
+  });
+
+  const result = data.value as PlaceInfo;
+
+  if (error.value) {
+    console.error("API 호출 중 오류 발생:", error.value);
+    return;
+  }
+
+  if (result) {
+    fetchPlace(result);
+  } else {
+    console.warn("데이터를 가져오지 못함");
+  }
+};
+
+onMounted(async () => {
+  await init();
 });
 </script>
