@@ -7,12 +7,7 @@
     </div>
 
     <div class="w-full md:w-1/2">
-      <div>
-        <span>1. input 명령어에 입력했을때 해당 인포가 나와야함 </span>
-      </div>
-      <div>
-        <span> 2. 북마크를 클릭했을때 해당 인포가 나와야함 </span>
-      </div>
+      <BaseEditor />
     </div>
   </div>
 </template>
@@ -21,4 +16,6 @@
 import { ref, onMounted } from "vue";
 import type { MarkerInfo } from "@/types/MapTypes";
 import GoogleMap from "@/components/map/GoogleMap.vue";
+import BaseEditor from "@/components/base/BaseEditor.vue";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
 </script>

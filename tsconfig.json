@@ -7,10 +7,18 @@
     "jsx": "preserve",
     "esModuleInterop": true,
     "lib": ["dom", "esnext"],
-    "types": ["nuxt", "vue", "node", "@types/google.maps"],
+    "types": [
+      "nuxt",
+      "vue",
+      "node",
+      "@types/google.maps",
+      "@types/node",
+      "@nuxt/types"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "#app": ["./.nuxt/types/app"]
     }
   }
 }
