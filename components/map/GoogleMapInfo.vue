@@ -41,13 +41,10 @@
           >
         </button>
       </div>
+
       <!-- 드롭다운 내용 -->
       <div v-show="isOpen" class="mt-3 border-t pt-3 text-gray-600 text-sm">
-        <div
-          v-for="(day, index) in placeInfo.openingHours"
-          :key="index"
-          class="mb-2"
-        >
+        <div v-for="(day, index) in placeInfo.openingHours" :key="index">
           <span class="font-normal text-xs text-gray-800">{{ day }}</span>
         </div>
       </div>

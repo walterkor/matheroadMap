@@ -8,14 +8,9 @@ export default defineEventHandler(async (event) => {
   //게시글 모든 조회
   if (method === "GET") {
     const [rows] = await pool.query(
-      "SELECT * FROM posts ORDER BY created_at DESC"
+      "SELECT * FROM posts WHERE delYn = false ORDER BY createdAt DESC"
     );
 
-    // TODO 이미지 파일 변환해야함
-    // return rows.map((post) => ({
-    //   ...post,
-    //   images: post.images ? JSON.parse(post.images) : [],
-    // }));
     return { success: true, posts: rows };
   }
 
@@ -23,17 +18,19 @@ export default defineEventHandler(async (event) => {
   if (method === "POST") {
     const body = await readBody(event);
     const { title, content, images } = body;
+
+    if (!title || !content) {
+      return { success: false, error: "Title and content are required" };
+    }
+
+    const jsonImages = JSON.stringify(images || []);
+
     const [result] = await pool.query(
       "INSERT INTO posts (title, content, images) VALUES (?, ?, ?)",
-      [title, content, JSON.stringify(images)]
+      [title, content, jsonImages]
     );
 
-    //return { success: true, id: result.insertId };
-    return { success: true };
-  }
-
-  //게시글 수정
-  if (method === "PUT") {
+    return { success: true, message: "Post added" };
   }
 
   return { success: false, error: "Method not supported" };

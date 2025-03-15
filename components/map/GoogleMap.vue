@@ -22,7 +22,8 @@ import { onMounted, ref } from "vue";
 import { Loader } from "@googlemaps/js-api-loader";
 import type { MarkerInfo, PlaceInfo } from "@/types/MapTypes";
 import GoogleMapInfo from "./GoogleMapInfo.vue";
-import { useFetch } from "nuxt/app";
+import { useAsyncData, useFetch } from "nuxt/app";
+import { useApi } from "@/composables/useApi";
 
 const mapDiv = ref<HTMLElement | null>(null);
 const searchQuery = ref("");
@@ -30,6 +31,9 @@ const runtimeConfig = useRuntimeConfig();
 
 let map: google.maps.Map | null;
 let autocomplete: google.maps.places.Autocomplete;
+
+// Emits 정의
+const emit = defineEmits(["bookmark-change"]);
 
 const markers = ref<MarkerInfo[]>([]); // 전체 마커
 const bookmarks = ref<MarkerInfo[]>([]); // 북마크 목록
@@ -58,8 +62,21 @@ const place = ref<PlaceInfo>({
   placeId: null,
 });
 
-const fetchPlace = (searchResult: PlaceInfo) => {
+const fetchPlace = async (searchResult: PlaceInfo) => {
   place.value = searchResult;
+  const placeId = place.value.placeId;
+  if (placeId) {
+    const { data, error } = await useApi(`/api/board/searchByPlaceId`, "POST", {
+      placeId,
+    });
+
+    if (data.value) {
+    }
+    // TODO 에러처리 해야함
+    if (error.value) {
+      emit("bookmark-change", place.value);
+    }
+  }
 };
 
 // init create googleMap
