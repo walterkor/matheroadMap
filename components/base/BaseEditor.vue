@@ -3,6 +3,7 @@
     <ClientOnly>
       <div class="pt-3 pb-3">
         <input
+          v-model="title"
           class="w-full p-3 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
           placeholder="제목을 입력하세요."
         />
@@ -52,10 +53,7 @@ const props = defineProps<{
   placeInfo: PlaceInfo;
 }>();
 
-// 추출한 데이터 저장용
-const deltaContent = ref("");
-const plainText = ref("");
-const htmlContent = ref("");
+const title = ref("");
 
 // 에디터 ref
 const quillRef = ref<any>(null);
@@ -100,7 +98,6 @@ const uploadImage = () => {
     formData.append("uploadFile", file);
     formData.append("placeId", props.placeInfo.placeId);
 
-    // TODO api 업로드 기능을 구현해야함
     try {
       const { url } = await $fetch<{ url: string }>("/api/upload/uploadImage", {
         method: "POST",
@@ -143,11 +140,39 @@ const editorOption = ref({
 });
 
 // TODO mergeInto로 변경
-const uploadPost = () => {
-  const quill = quillRef.value?.getEditor();
-  console.log(quill);
+const uploadPost = async () => {
+  const quill = quillRef.value.getQuill();
+  const contentHtml = quill.root.innerHTML;
+
+  if (!title.value.trim() || !contentHtml.trim()) {
+    alert("제목과 내용을 모두 입력해주세요.");
+    return;
+  }
+
+  if (!props.placeInfo.placeId) {
+    alert("위치값은 필수 값입니다.");
+    return;
+  }
+
+  try {
+    const response: any = await $fetch("/api/board", {
+      method: "POST",
+      body: {
+        title: title.value,
+        content: contentHtml,
+        placeId: props.placeInfo.placeId,
+      },
+    });
+    if (response.success) {
+      alert("게시글이 저장되었습니다.");
+    }
+  } catch (error) {
+    console.error("게시글 저장 실패:", error);
+    alert("게시글 저장 실패");
+  }
 };
 
+// TODO update로 변경
 const delPost = () => {
   console.log("delPost");
 };

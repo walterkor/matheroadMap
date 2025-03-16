@@ -17,17 +17,18 @@ export default defineEventHandler(async (event) => {
   //게시글 등록
   if (method === "POST") {
     const body = await readBody(event);
-    const { title, content, images } = body;
+    const { title, content, placeId } = body;
 
-    if (!title || !content) {
-      return { success: false, error: "Title and content are required" };
+    if (!title || !content || !placeId) {
+      return {
+        success: false,
+        error: "Title and content and placeId are required",
+      };
     }
 
-    const jsonImages = JSON.stringify(images || []);
-
     const [result] = await pool.query(
-      "INSERT INTO posts (title, content, images) VALUES (?, ?, ?)",
-      [title, content, jsonImages]
+      "INSERT INTO posts (placeId, title, content) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE title = VALUES(title), content = VALUES(content)",
+      [placeId, title, content]
     );
 
     return { success: true, message: "Post added" };
