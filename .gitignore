@@ -5,7 +5,9 @@ dist
 .output
 .pnpm-store
 .nuxt
-.env/
+.env
+.env.dev
+.env.stg
 .DS_Store
 .idea/
 .vite-inspect
