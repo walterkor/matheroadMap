@@ -160,6 +160,7 @@ const uploadPost = async () => {
     const response: any = await $fetch("/api/board", {
       method: "POST",
       body: {
+        placeInfo: props.placeInfo,
         title: title.value,
         content: contentHtml,
         placeId: props.placeInfo.placeId,
@@ -174,9 +175,19 @@ const uploadPost = async () => {
   }
 };
 
-// TODO update로 변경
-const delPost = () => {
-  console.log("delPost");
+const delPost = async () => {
+  const placeId = props.placeInfo.placeId;
+  if (!placeId) {
+    return alert("좌표가 없습니다.");
+  }
+
+  const response = await $fetch("/api/board/delPost", {
+    method: "POST",
+    body: {
+      placeId: placeId,
+    },
+  });
+  console.log(response);
 };
 
 // 디바운스된 이벤트 핸들러

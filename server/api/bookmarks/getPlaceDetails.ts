@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
     "formatted_phone_number",
     "opening_hours",
     "place_id",
+    "geometry",
   ];
   const parameterString = parameter.join(",");
   const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=${parameterString}&language=ko&key=${apiKey}`;
@@ -16,6 +17,7 @@ export default defineEventHandler(async (event) => {
   try {
     const response = await fetch(url);
     const data = await response.json();
+    const location = data.result.geometry.location;
 
     const openingHours = data.result.opening_hours;
     const result: PlaceInfo = {
@@ -23,7 +25,7 @@ export default defineEventHandler(async (event) => {
       address: data.result.formatted_address,
       phoneNumber: data.result.formatted_phone_number,
       openingHours: openingHours.weekday_text,
-      location: null,
+      location: location,
       openStatus: openingHours.open_now,
       placeId: data.result.place_id,
     };
