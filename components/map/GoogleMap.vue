@@ -66,16 +66,7 @@ const fetchPlace = async (searchResult: PlaceInfo) => {
   place.value = searchResult;
   const placeId = place.value.placeId;
   if (placeId) {
-    const { data, error } = await useApi(`/api/board/searchByPlaceId`, "POST", {
-      placeId,
-    });
-
-    if (data.value) {
-    }
-    // TODO 에러처리 해야함
-    if (error.value) {
-      emit("bookmark-change", place.value);
-    }
+    emit("bookmark-change", place.value);
   }
 };
 

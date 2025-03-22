@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from "h3";
 import getPool from "@/server/db/connection";
-
+import { Post } from "@/types/post";
 //placeId로 찾을 떄
 export default defineEventHandler(async (event) => {
   const pool = getPool();
@@ -18,9 +18,12 @@ export default defineEventHandler(async (event) => {
       });
     }
     try {
-      const [rows] = await pool.query("SELECT * FROM posts WHERE PlaceId = ?", [
-        placeId,
-      ]);
+      const [rows] = await pool.query<Post[]>(
+        "SELECT * FROM posts WHERE PlaceId = ? LIMIT 1",
+        [placeId]
+      );
+
+      const row = rows[0];
 
       if (!rows || rows.length === 0) {
         throw createError({
@@ -30,7 +33,7 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      return { success: true, data: rows };
+      return { success: true, data: row };
     } catch (error: any) {
       console.error("DB 오류:", error);
       throw createError({

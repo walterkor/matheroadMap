@@ -46,6 +46,8 @@ import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 import { useDebounceFn } from "@vueuse/core";
 import { PlaceInfo } from "@/types/MapTypes";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { useApi } from "@/composables/useApi";
 
 // Props 정의
 const props = defineProps<{
@@ -182,11 +184,29 @@ const debounceTextChange = useDebounceFn(() => {
   emit("text-change", editedContent.value);
 }, 2000);
 
-// props.content가 변경될 때 자동 동기화
+const fetchPost = async (placeId: string) => {
+  if (placeId) {
+    const { data, error } = await useApi(`/api/board/searchByPlaceId`, "POST", {
+      placeId,
+    });
+    const quill = quillRef.value.getQuill();
+    if (data.value) {
+      const result = data.value.data;
+      title.value = result.title;
+      quill.root.innerHTML = result.content;
+    }
+
+    if (error.value) {
+      title.value = "";
+      quill.root.innerHTML = "";
+    }
+  }
+};
+
 watch(
-  () => props.content,
-  (newValue) => {
-    editedContent.value = newValue;
+  () => props.placeInfo.placeId,
+  (placeId) => {
+    fetchPost(placeId);
   }
 );
 </script>
