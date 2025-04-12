@@ -59,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
 // 라우터 객체 생성
 const router = useRouter();
 

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
+    "prdbuild": "nuxt build --dotenv .env.prod",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

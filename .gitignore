@@ -14,7 +14,7 @@ dist
 .netlify/
 .eslintcache
 elk-translation-status.json
-
+./public/upload
 
 *~
 *swp
