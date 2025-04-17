@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, defineEmits, defineProps } from "vue";
-import { Loader } from "@googlemaps/js-api-loader";
 import type { MarkerInfo } from "@/types/MapTypes";
 
+const { Loader } = await import("@googlemaps/js-api-loader");
 const props = defineProps<{ markers: MarkerInfo[] }>();
 const emit = defineEmits(["toggleBookmark"]);
 

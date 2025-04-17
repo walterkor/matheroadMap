@@ -21,6 +21,19 @@ export default defineNuxtConfig({
     strict: true,
   },
   build: {
-    transpile: ["vue"],
+    transpile: ["vue", "entities", "estree-walker"],
+  },
+  nitro: {
+    externals: {
+      inline: ["entities", "estree-walker"],
+    },
+  },
+  alias: {
+    "entities/lib/esm/decode.js": "entities/lib/decode.js",
+  },
+  vite: {
+    ssr: {
+      noExternal: ["@vueup/vue-quill", "entities", "estree-walker"],
+    },
   },
 });

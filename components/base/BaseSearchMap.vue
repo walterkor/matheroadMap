@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { Loader } from "@googlemaps/js-api-loader";
 import type { SearchResult } from "@/types/MapTypes";
+const { Loader } = await import("@googlemaps/js-api-loader");
 
 const props = defineProps<{ searchResults: SearchResult[] }>();
 const emit = defineEmits(["markerClicked"]);

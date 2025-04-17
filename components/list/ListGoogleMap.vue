@@ -15,11 +15,10 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import { Loader } from "@googlemaps/js-api-loader";
 import type { MarkerInfo, PlaceInfo } from "@/types/MapTypes";
 import { useAsyncData, useFetch } from "nuxt/app";
 import { useApi } from "@/composables/useApi";
-
+const { Loader } = await import("@googlemaps/js-api-loader");
 const mapDiv = ref<HTMLElement | null>(null);
 const searchQuery = ref("");
 const runtimeConfig = useRuntimeConfig();
