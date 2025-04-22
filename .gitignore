@@ -8,6 +8,7 @@ dist
 .env
 .env.dev
 .env.stg
+.env.*
 .DS_Store
 .idea/
 .vite-inspect
