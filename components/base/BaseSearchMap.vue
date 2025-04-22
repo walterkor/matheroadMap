@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
 import type { SearchResult } from "@/types/MapTypes";
-const { Loader } = await import("@googlemaps/js-api-loader");
+
 
 const props = defineProps<{ searchResults: SearchResult[] }>();
 const emit = defineEmits(["markerClicked"]);
@@ -9,8 +9,9 @@ const emit = defineEmits(["markerClicked"]);
 const map = ref<google.maps.Map | null>(null);
 let markers: google.maps.Marker[] = [];
 
-onMounted(async () => {
+onMounted(async () =>
   const apiKey = useRuntimeConfig().public.googleMapsApiKey;
+  const { Loader } = await import("@googlemaps/js-api-loader");
 
   const loader = new Loader({
     apiKey,

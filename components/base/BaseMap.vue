@@ -2,7 +2,6 @@
 import { onMounted, ref, defineEmits, defineProps } from "vue";
 import type { MarkerInfo } from "@/types/MapTypes";
 
-const { Loader } = await import("@googlemaps/js-api-loader");
 const props = defineProps<{ markers: MarkerInfo[] }>();
 const emit = defineEmits(["toggleBookmark"]);
 
@@ -10,6 +9,7 @@ const map = ref<google.maps.Map | null>(null);
 
 onMounted(async () => {
   const apiKey = useRuntimeConfig().public.googleMapsApiKey;
+  const { Loader } = await import("@googlemaps/js-api-loader");
 
   const loader = new Loader({
     apiKey,

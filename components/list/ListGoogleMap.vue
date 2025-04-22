@@ -18,7 +18,6 @@ import { onMounted, ref } from "vue";
 import type { MarkerInfo, PlaceInfo } from "@/types/MapTypes";
 import { useAsyncData, useFetch } from "nuxt/app";
 import { useApi } from "@/composables/useApi";
-const { Loader } = await import("@googlemaps/js-api-loader");
 const mapDiv = ref<HTMLElement | null>(null);
 const searchQuery = ref("");
 const runtimeConfig = useRuntimeConfig();
@@ -31,12 +30,6 @@ const emit = defineEmits(["bookmark-change"]);
 
 const markers = ref<MarkerInfo[]>([]); // 전체 마커
 const bookmarks = ref<MarkerInfo[]>([]); // 북마크 목록
-
-// setting googleMap Info
-const loader = new Loader({
-  apiKey: runtimeConfig.public.googleMapsApiKey,
-  libraries: ["places", "marker"],
-});
 
 // setting googleMap Info
 const mapOptions = {
@@ -64,8 +57,16 @@ const fetchPlace = async (searchResult: PlaceInfo) => {
   }
 };
 
+let loader: any;
+
 // init create googleMap
 const init = async () => {
+  const { Loader } = await import("@googlemaps/js-api-loader"); // ✅ 이 위치로 옮기기
+  loader = new Loader({
+    apiKey: runtimeConfig.public.googleMapsApiKey,
+    libraries: ["places", "marker"],
+  });
+
   await loader.load();
 
   if (mapDiv.value) {
