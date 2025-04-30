@@ -24,6 +24,7 @@ import { PlaceInfo } from "@/types/MapTypes";
 import { Post } from "@/types/post";
 import { onMounted, ref } from "vue";
 const modalOpen = ref(false);
+const runtimeConfig = useRuntimeConfig();
 
 const CardPost = ref<Post[]>([]);
 //ListCard data init function
@@ -41,8 +42,17 @@ const init = async () => {
     } else {
       alert("데이터를 가져오지 못했습니다.");
     }
-  } catch (error) {
-    alert(error);
+  } catch (error: any) {
+    console.error("API 요청 실패:", error);
+
+    if (error?.response) {
+      console.error("에러 응답 데이터:", error.response.data);
+      console.error("에러 상태 코드:", error.response.status);
+    } else if (error?.message) {
+      console.error("에러 메시지:", error.message);
+    } else {
+      console.error("Unknown Error", error);
+    }
   }
 };
 
@@ -53,6 +63,7 @@ const handlePost = (post: Post) => {
 };
 
 onMounted(() => {
+  console.log(1, runtimeConfig.public.envMode);
   init();
 });
 </script>

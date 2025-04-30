@@ -1,7 +1,8 @@
-import { promises as fs } from "fs";
-import { writeFile } from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
+import { promises as fs } from "fs";
 import path from "path";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3 } from "@/utils/S3Client";
 
 export default defineEventHandler(async (event) => {
   const formData = await readMultipartFormData(event);
@@ -28,16 +29,20 @@ export default defineEventHandler(async (event) => {
 
   // 저장 경로
   const uniqueFileName = `${uuidv4()}.${fileExt}`;
-  const uploadDir = path.resolve(`public/upload/${placeId}`);
-  const filePath = path.join(uploadDir, uniqueFileName);
+  const key = `${placeId}/${uniqueFileName}`; //s3 내 경로 (변경해야함...)
 
-  await fs.mkdir(uploadDir, { recursive: true });
-
-  // uploads 폴더 없으면 생성 필요 (수동 생성 권장)
-  await fs.writeFile(filePath, file.data);
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: "my-bucket",
+      Key: key,
+      Body: file.data,
+      ContentType: file.type || "image/jpeg",
+      ACL: "public-read", // 로컬 테스트용으로 공개 URL 허용
+    })
+  );
 
   // 반환 URL
-  const fileUrl = `/upload/${placeId}/${uniqueFileName}`;
+  const fileUrl = `http://localhost:4566/my-bucket/${key}`;
 
   return { url: fileUrl };
 });

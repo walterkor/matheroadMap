@@ -31,6 +31,7 @@ const getPool = () => {
   try {
     const testConn = await getPool().getConnection();
     console.log("✅ MySQL 연결 성공! 🛢️");
+
     testConn.release();
   } catch (err: any) {
     console.error("❌ MySQL 연결 실패:", err.message);
